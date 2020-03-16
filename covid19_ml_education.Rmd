@@ -1,0 +1,100 @@
+---
+title: "COVID-19 Machine Learning Data for Educational Use Only"
+author: "Karandeep Singh"
+output: html_notebook
+---
+
+Source of data: http://virological.org/t/epidemiological-data-from-the-ncov-2019-outbreak-early-descriptions-from-publicly-available-data/337
+
+# Read in the source data
+
+```{r}
+library(tidyverse)
+library(readxl)
+
+excel_sheets('COVID19_2020_open_line_list.xlsx')
+covid_data = read_excel('COVID19_2020_open_line_list.xlsx', 1)
+```
+
+
+```{r}
+covid_data %>% 
+  count(outcome, sort=TRUE)
+```
+
+```{r}
+covid_data %>% 
+  select(symptoms) %>% 
+  separate_rows(symptoms, sep='(,|;) ') %>% 
+  count(symptoms, sort=TRUE)
+```
+
+```{r}
+covid_data %>% 
+  mutate(date_onset_symptoms = lubridate::dmy(date_onset_symptoms)) %>% 
+  mutate(date_admission_hospital = lubridate::dmy(date_admission_hospital)) %>% 
+  select(date_onset_symptoms, date_admission_hospital) %>% 
+  mutate(days_onset_to_admission = difftime(date_admission_hospital,date_onset_symptoms, units = 'days') %>% as.integer()) %>% 
+  filter(days_onset_to_admission >= 0) %>% 
+  count(days_onset_to_admission) %>% 
+  mutate(cum_sum = cumsum(n)) %>% 
+  mutate(cum_prop = cum_sum/max(cum_sum))
+```
+
+```{r}
+covid_data %>% 
+  count(country, sort = TRUE)
+
+covid_data %>% 
+  count(province, sort = TRUE)
+
+covid_data %>% 
+  count(country, province, sort = TRUE)
+
+covid_data %>% 
+  filter(country == 'United States')
+```
+
+# Let's generate a COVID machine learning dataset
+
+*Primary predictors:* age, sex, cough, fever, chills, sore_throat, headache, fatigue
+
+*Outcomes (for teaching purposes):*
+* urgency_of_admission (0-1 days to admission => High, 2+ days or no admission => Low)
+* days_onset_to_admission (numeric)
+
+*Optional predictors:*
+* Use NLP to extract additional predictors from the symptoms column
+* country, province, city (useful for teaching about high-cardinality data)
+* latitude and longitude
+
+```{r}
+covid_ml = 
+  covid_data %>% 
+  mutate(date_onset_symptoms = lubridate::dmy(date_onset_symptoms)) %>% 
+  mutate(date_admission_hospital = lubridate::dmy(date_admission_hospital)) %>%
+  mutate(date_confirmation = lubridate::dmy(date_confirmation)) %>% 
+  mutate(date_death_or_discharge = lubridate::dmy(date_death_or_discharge)) %>%
+  mutate(days_onset_to_admission = difftime(date_admission_hospital,date_onset_symptoms, units = 'days') %>% as.integer()) %>% 
+  filter(days_onset_to_admission >= 0 | !is.na(date_onset_symptoms)) %>% 
+  mutate(urgency_of_admission = 
+           if_else(days_onset_to_admission <=1, 'High', 'Low', 'Low')) %>% 
+  mutate(cough = 
+           str_detect(symptoms,
+                      regex('(cough)|(expector)|(sputum)|(phlegm)', ignore_case=TRUE))) %>%
+  mutate(fever = str_detect(symptoms, regex('(fever)', ignore_case=TRUE))) %>%
+  mutate(chills = str_detect(symptoms, regex('(chills)', ignore_case=TRUE))) %>%
+  mutate(sore_throat = 
+           str_detect(symptoms, regex('(throat)|(pharyn)', ignore_case=TRUE))) %>% 
+  mutate(headache = str_detect(symptoms, regex('headache', ignore_case=TRUE))) %>% 
+  mutate(fatigue = 
+           str_detect(symptoms, regex('(fatigue)|(weakness)', ignore_case=TRUE))) %>% 
+  select(ID, age, sex, cough:fatigue, urgency_of_admission, days_onset_to_admission, 
+         symptoms, city, province, country, latitude, longitude, geo_resolution,
+         date_onset_symptoms,
+         date_admission_hospital, date_confirmation, date_death_or_discharge, source) %>% 
+  mutate_at(vars(cough:fatigue), . %>% if_else(., 'Yes', 'No', 'No')) %>% 
+  mutate(age = str_extract(age, '\\d+') %>% as.integer())
+
+write_csv(covid_ml, 'covid_ml.csv')
+```
