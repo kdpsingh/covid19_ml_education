@@ -19,10 +19,15 @@ From the original dataset, the covid19_ml.csv dataset contains those cases for w
 
 This set of inclusion criteria reduces the number of cases from 20,758 to 861. The purpose of this dataset (intended for education) is to predict the urgency with which a COVID-19 patient will need to be admitted to the hospital from the time of onset of symptoms.
 
-*Primary predictors:* age, sex, cough, fever, chills, sore_throat, headache, fatigue
+*Primary predictors:*
+- age (if an age range was provided in the source data, only the first number is used)
+- sex
+- cough, fever, chills, sore_throat, headache, fatigue (all derived from the symptoms column using regular expressions)
 
 *Outcomes (for teaching purposes):*
-- Classification: urgency_of_admission (binary: 0-1 days to admission => High, 2+ days or no admission => Low)
+- Classification: urgency_of_admission
+  - 0-1 days from onset of symptoms to admission => High
+  - 2+ days from onset of symptoms to admission *or* no admission => Low
 - Regression: days_onset_to_admission (numeric)
 
 *Optional predictors:*
