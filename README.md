@@ -1,12 +1,17 @@
+# COVID-19 Machine Learning Dataset
+## Intended For Educational Use Only
+
+The dataset is located at [covid_ml.csv](https://github.com/ml4lhs/covid19_ml_education/raw/master/covid_ml.csv).
+
 "It’s hard to over value the importance of really caring about the outcome when learning modeling." - JD Long
 
-The COVID-19 pandemic has affected the lives of many people around the world and is a growing threat to our health as the case volume continues to rise in the United States. This dataset compiles  is intended to be used for 
+The COVID-19 pandemic has affected the lives of many people around the world and is a growing threat to our health as the case volume continues to rise in the United States. 
 
 The original data comes from the following source: http://virological.org/t/epidemiological-data-from-the-ncov-2019-outbreak-early-descriptions-from-publicly-available-data/337
 
-At the original source, there is a Google Sheet that contains live updating data. The Google Sheet receives very high traffic so the data was exported as an Excel file on March 14 at 5:30 pm. This data is out-of-date by the time you read this as the number of cases is growing exponentially.
+The original dataset is based on public reports of COVID-19 cases reported internationally. There is a source column that provides a link to the website (or news source) where the case was found.
 
-The original dataset is based on public reports of COVID-19 cases reported internationally. There is a source column that provides a link to the website from where the case was derived.
+At the original source, there is a Google Sheet that contains live updating data. The Google Sheet receives very high traffic (blocking access to users), so the data was first exported as an Excel file on March 14 at 5:30 pm. This dataset will be out-of-date by the time you read this as the number of cases is growing exponentially.
 
 From the original dataset, the covid19_ml.csv dataset contains those cases for which:
 - a date of onset is provided
