@@ -34,3 +34,18 @@ This set of inclusion criteria reduces the number of cases from 20,758 to 861. T
 - Use NLP to extract additional predictors from the symptoms column
 - country, province, city (useful for teaching about high-cardinality data)
 - latitude and longitude
+
+## Should this data be used for research?
+
+No. Students working with this dataset should understand that both the source data and the ML data have several limitations:
+- The source data is crowdsourced and may contain inaccuracies.
+- The source data has a lot of missing information. This should be evident from the fact that nearly 20,000 of the cases were excluded due to missingness of information related to the outcome variable when creating the ML dataset.
+- There may be duplicate patients in this dataset
+- There is a substantial amount of missingness in the symptoms data.
+- The data contains some patients who are missing a date of confirmation. The status of these patients is a bit unclear.
+
+**And most importantly:**
+- The entire premise is flawed. The fact that a patient was admitted the same day as experiencing symptoms may have more to do with the availability of hospital beds as opposed to the patient's acuity of illness.
+- Also, the fact that less sick patients or asymptomatic patients may not have been captured in the source dataset mean that the probabilities estimated by any model fit on this data are unlikely to reflect reality.
+
+**Educating students about the limitations of both the data and the machine learning task should be part of the course content.**
